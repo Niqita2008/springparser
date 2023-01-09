@@ -1,0 +1,71 @@
+@font-face {
+    font-family: 'Matias';
+    font-style: normal;
+    font-weight: 250;
+    src: local('Matias'), url('https://fonts.cdnfonts.com/s/23458/Matias.woff') format('woff');
+}
+
+.input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.input + label {
+    display: inline-grid;
+    place-items: center;
+    position: relative;
+    isolation: isolate;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    padding: 3px;
+    background-color: transparent;
+    border: 2px solid #4CF;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.input[disabled] + label {
+    border: 1px solid #999;
+    background-color: #CCC;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.input:enabled:hover + label {
+    background: #4CF;
+}
+
+table {
+    font-size: 17px;
+    border: #223344 solid 1px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 7px;
+}
+
+tr:nth-child(even) {
+    background: #CCC;
+}
+
+#copy-area {
+    width: 0;
+    height: 0;
+}
+
+body {
+    font-family: 'Matias', sans-serif;
+    font-size: 20px;
+    background: #0004;
+    height: border-box;
+    background-size: cover;
+}
