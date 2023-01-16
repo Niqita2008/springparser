@@ -11,7 +11,7 @@ public class IllegalDocumentException extends Throwable {
 
     public enum IllegalCause {
         INCORRECT_FORMAT("Неверный формат документа"), INVALID("Нечитаемый документ"),
-        TOO_SHORT("Документ подозрительно короткий"), NO_OUTLINE("В документе ОКБ нет закладок");
+        NO_OUTLINE("В документе ОКБ нет закладок");
         final String message;
 
         IllegalCause(String message) {

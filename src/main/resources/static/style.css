@@ -58,8 +58,8 @@ tr:nth-child(even) {
 }
 
 #copy-area {
-    width: 0;
-    height: 0;
+    display: none;
+    z-index: -1;
 }
 
 body {

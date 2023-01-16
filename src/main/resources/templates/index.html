@@ -28,6 +28,32 @@
         <th>Место рождения</th>
         <th th:text="${table.placeOfBirth} ?: '-'"></th>
     </tr>
+    <tr>
+        <td>№</td>
+        <td>Наименование кредитора</td>
+        <td>ИНН кредитора</td>
+        <td>Вид займа</td>
+        <td>Уникальный идентификатор договора (сделки)</td>
+        <td>Дата оформления</td>
+        <td>Дата закрытия</td>
+        <td>Валюта</td>
+        <td>Сумма займа</td>
+        <td>Выплачено</td>
+        <td>Задолженность</td>
+    </tr>
+    <tr th:each="row, iter : ${table.resultArrayList}">
+        <td th:text="${iter.index}"></td>
+        <td th:text="${row.creditCompany}"></td>
+        <td th:text="${row.inn}"></td>
+        <td th:text="${row.type}"></td>
+        <td th:text="${row.uuid}"></td>
+        <td th:text="${row.opened}"></td>
+        <td th:text="${row.closed}"></td>
+        <td th:text="${row.currency}"></td>
+        <td th:text="${row.size}"></td>
+        <td th:text="${row.paid}"></td>
+        <td th:text="${row.debt}"></td>
+    </tr>
 </table>
 <p th:if="${err}" th:text="${err}"></p>
 <script type="text/javascript" th:src="@{script.js}"></script>

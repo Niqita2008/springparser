@@ -1,0 +1,23 @@
+18:41:23 INFO  ParserApplication Starting ParserApplication using Java 19.0.1 with PID 13430 (/home/niq/springparser/target/classes started by niq in /home/niq/springparser)
+18:41:23 INFO  ParserApplication No active profile set, falling back to 1 default profile: "default"
+18:41:23 INFO  DevToolsPropertyDefaultsPostProcessor Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+18:41:23 INFO  DevToolsPropertyDefaultsPostProcessor For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+18:41:23 INFO  TomcatWebServer Tomcat initialized with port(s): 8080 (http)
+18:41:23 INFO  Http11NioProtocol Initializing ProtocolHandler ["http-nio-8080"]
+18:41:23 INFO  StandardService Starting service [Tomcat]
+18:41:23 INFO  StandardEngine Starting Servlet engine: [Apache Tomcat/10.1.4]
+18:41:23 INFO  [/] Initializing Spring embedded WebApplicationContext
+18:41:23 INFO  ServletWebServerApplicationContext Root WebApplicationContext: initialization completed in 444 ms
+18:41:24 INFO  WelcomePageHandlerMapping Adding welcome page template: index
+18:41:24 INFO  OptionalLiveReloadServer LiveReload server is running on port 35729
+18:41:24 INFO  Http11NioProtocol Starting ProtocolHandler ["http-nio-8080"]
+18:41:24 INFO  TomcatWebServer Tomcat started on port(s): 8080 (http) with context path ''
+18:41:24 INFO  ParserApplication Started ParserApplication in 0.837 seconds (process running for 1.403)
+18:41:39 INFO  [/] Initializing Spring DispatcherServlet 'dispatcherServlet'
+18:41:39 INFO  DispatcherServlet Initializing Servlet 'dispatcherServlet'
+18:41:39 INFO  DispatcherServlet Completed initialization in 1 ms
+18:41:39 INFO   Starting detect from /home/niq/springparser/upload/1673876499326/ОКБ.pdf
+18:41:39 WARN  PDType1Font Using fallback font LiberationSans for base font Symbol
+18:41:39 WARN  PDType1Font Using fallback font LiberationSans for base font ZapfDingbats
+18:41:40 INFO   OKB DETECTED!
+18:41:43 INFO   Parsing took 4.239242386s

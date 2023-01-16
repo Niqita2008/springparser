@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class FileUploadController {
     private final FileSystemStorageService storageService;
-
     @Autowired
     public FileUploadController(FileSystemStorageService storageService) {
         this.storageService = storageService;
@@ -26,7 +25,7 @@ public class FileUploadController {
     @PostMapping("/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, Model model) {
         try {
-            model.addAttribute("table", storageService.handle(file));
+            model.addAttribute("table", storageService.handleFile(file));
         } catch (IllegalDocumentException e) {
             model.addAttribute("err", e.getMessage());
         }

@@ -1,0 +1,105 @@
+package com.vprave.niqitadev.parser.parse.consumers;
+
+import com.vprave.niqitadev.parser.parse.IllegalDocumentException;
+import com.vprave.niqitadev.parser.parse.Patterns;
+import com.vprave.niqitadev.parser.parse.Utils;
+import com.vprave.niqitadev.parser.table.Result;
+import com.vprave.niqitadev.parser.table.Row;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.INVALID;
+import static com.vprave.niqitadev.parser.parse.Patterns.moneyPattern;
+import static com.vprave.niqitadev.parser.parse.Patterns.spacePattern;
+
+public class OkbParser {
+    private int i;
+    private final int[] sumI = new int[1], startHeader = new int[2];
+    private String[] split;
+
+    public Result get(String useful, String fullText) throws IllegalDocumentException {
+        Matcher m = Patterns.okb.closed.matcher(useful);
+        if (!m.find()) throw new IllegalDocumentException(INVALID, null);
+        Result result = new Result();
+
+        String name = StringUtils.substringBetween(fullText, "ИСТОРИИ", "Дата");
+        Matcher matcher = Patterns.okb.fullName.matcher(name.substring(name.indexOf(':') + 1));
+        if (matcher.find()) result.fullName = matcher.group(0);
+        if ((matcher = Patterns.date.matcher(fullText.substring(0, fullText.indexOf("Паспорт")))).find())
+            result.dateOfBirth = matcher.group(0);
+
+
+        String[] activeSplit = Patterns.okb.mainSplit.split(useful.substring(0, m.start())), closedSplit = Patterns.okb.mainSplit.split(useful.substring(m.end()));
+        String header = activeSplit[0].substring(activeSplit[0].substring(0, activeSplit[0].indexOf('№')).lastIndexOf('\n') + 1);
+        if (!Patterns.okb.closedIsEmpty.matcher(closedSplit[0]).find()) {
+            String temp;
+            header += (temp = closedSplit[0].substring(closedSplit[0].indexOf('№'))).substring(temp.substring(0, header.indexOf('1')).lastIndexOf('\n'));
+        }
+
+        i = 0;
+        startHeader[0] = header.indexOf("Источник");
+        startHeader[1] = header.indexOf("Размер");
+        int i = header.indexOf("Вид");
+        if (i != -1 && (startHeader[0] == -1 || i < startHeader[0])) startHeader[0] = i;
+        sumI[0] = header.indexOf("Задолженность");
+        assert startHeader[0] != -1 && startHeader[1] != -1 && sumI[0] != -1;
+        split = Patterns.okb.headerSplit.split(header);
+
+        Stream.concat(Arrays.stream(activeSplit).skip(1), Arrays.stream(closedSplit).skip(1)).forEach(s -> result.resultArrayList.add(accept(s)));
+        return result;
+    }
+
+    public Row accept(String page) {
+        Matcher m = Patterns.okb.end.matcher(page);
+        if (!m.find()) return null;
+        if (!(m = Patterns.okb.type.matcher(page = Utils.removeAll(Patterns.okb.bs, page.substring(0, m.end(0))))).find())
+            return null;
+        String[] lines = page.lines().filter(s -> !s.isBlank()).dropWhile(a -> !Patterns.okb.start.matcher(a).find()).toArray(String[]::new);
+        Row row = new Row();
+
+        Matcher matcher;
+        String string;
+        if (!(matcher = moneyPattern.matcher(string = split[++i].substring(sumI[0]))).find()) return row;
+        row.currency = string.substring(matcher.end(0), string.indexOf(' ', matcher.end(0) + 2));
+        row.debt = string = StringUtils.deleteWhitespace(matcher.group(0)).replace(',', '.');
+        BigDecimal debt = BigDecimal.valueOf(Double.parseDouble(string));
+        if (!(matcher = moneyPattern.matcher(split[i].substring(startHeader[1]))).find()) return row;
+        row.size = string = StringUtils.deleteWhitespace(matcher.group(0)).replace(',', '.');
+        double doubleDebt = BigDecimal.valueOf(Double.parseDouble(string)).subtract(debt).doubleValue();
+        row.paid = doubleDebt == (long) doubleDebt ? String.format("%d", (long) doubleDebt) : String.format("%s", doubleDebt);
+        if (!(matcher = Patterns.okb.creditor.matcher(string = split[i].lines().filter(f -> !f.isBlank())
+                .map(d -> d.substring(startHeader[0], startHeader[1])).collect(Collectors.joining()))).find())
+            return row;
+
+        if (matcher.start(0) != 0) row.creditCompany = string.substring(0, matcher.start(0));
+        else row.creditCompany = string.substring(string.indexOf(',') + 1);
+
+        String s = page.substring(0, m.start(0));
+        if ((m = Patterns.okb.typeEnd.matcher(s)).find())
+            row.type = spacePattern.matcher(s.substring(m.end(0))).replaceAll(" ");
+        if ((m = Patterns.uuid.matcher(StringUtils.deleteWhitespace(page))).find()) row.uuid = m.group(0);
+        int tempI0 = (page = String.join("\n", lines)).indexOf("ИНН");
+        if (tempI0 != -1 && (m = Patterns.innPattern.matcher(page.substring(tempI0 + 5))).find())
+            row.inn = m.group(0);
+
+        for (int j = 0; j < lines.length; j++) {
+            if (row.closed != null) break;
+            if (Patterns.okb.newClosed.matcher(lines[j]).find() && (m = Patterns.date.matcher(lines[j += 2])).find())
+                row.closed = m.group(0);
+            if (Patterns.okb.newOpened.matcher(lines[j]).find() && (m = Patterns.date.matcher(lines[j += 2])).find())
+                row.opened = m.group(0);
+            else if (Patterns.okb.oldDateHeader.matcher(lines[j]).find() && (m = Patterns.date.matcher(lines[j += 2])).find()) {
+                row.opened = m.group(0);
+                if (row.closed != null) break;
+                s = (String) Arrays.stream(lines[j].split(" ", 0)).filter(f -> !f.isEmpty()).toArray()[2];
+                if (!s.equals("-")) row.closed = s;
+            }
+        }
+        return row;
+    }
+}
