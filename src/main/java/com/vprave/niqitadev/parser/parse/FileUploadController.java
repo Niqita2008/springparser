@@ -1,6 +1,6 @@
 package com.vprave.niqitadev.parser.parse;
 
-import com.vprave.niqitadev.parser.storage.FileSystemStorageService;
+import com.vprave.niqitadev.parser.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,9 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class FileUploadController {
-    private final FileSystemStorageService storageService;
+    private final StorageService storageService;
     @Autowired
-    public FileUploadController(FileSystemStorageService storageService) {
+    public FileUploadController(StorageService storageService) {
         this.storageService = storageService;
     }
 
