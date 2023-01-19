@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +20,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.*;
+import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.INCORRECT_FORMAT;
+import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.INVALID;
 
 @Service
 public class StorageService {
@@ -81,7 +81,11 @@ public class StorageService {
                     return true;
                 }
             });
-            if (files != null) for (var file : files) FileUtils.deleteDirectory(file);
+            if (files != null) for (var dir : files) {
+                File[] listFiles = dir.listFiles();
+                if (listFiles != null) for (var file : listFiles) file.delete();
+                dir.delete();
+            }
         } catch (IOException e) {
             throw new StorageException("Could not initialize storage.", e);
         }
