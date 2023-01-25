@@ -20,7 +20,7 @@ public final class NbkiParser implements BiConsumer<String, Row> {
     private final Logger logger;
 
     public NbkiParser() {
-        logger = LogManager.getRootLogger();
+        logger = LogManager.getLogger("main");
     }
 
     public Result get(String fullText) throws IllegalDocumentException {
@@ -30,7 +30,7 @@ public final class NbkiParser implements BiConsumer<String, Row> {
             else if (indexes[1] == -1 && Patterns.nbki.end.matcher(line).find()) indexes[1] = fullText.indexOf(line);
         });
         if (indexes[0] == -1 || indexes[1] == -1) {
-            logger.debug("NBKI didnt get the borders [start: " + indexes[0] + ", end: " + indexes[1] + "]\nfull text:\n" + fullText);
+            logger.error("NBKI didnt get the borders [start: " + indexes[0] + ", end: " + indexes[1] + "]\nfull text:\n" + fullText);
             throw new IllegalDocumentException(INCORRECT_FORMAT, null);
         }
         String[] split = Patterns.nbki.normalisedSplit.split(Utils.removeAll(Patterns.nbki.bs, fullText.substring(indexes[0], indexes[1])), 0);

@@ -5,20 +5,23 @@
             <PatternLayout pattern="%d{HH:mm:ss} %-5level %c{1} %msg%n"/>
         </Console>
         <File name="file" fileName="logs/${date:yyyy-MM-dd}.log" immediateFlush="true" append="true">
-            <PatternLayout pattern="%d{HH:mm:ss} %-5level %c{1} %msg%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level %logger{36} %msg%n"/>
         </File>
         <File name="performance-analyse-file" fileName="logs/performance-analyse.log" immediateFlush="true" append="true">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %c{1} %msg%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} %msg%n"/>
         </File>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="stdout"/>
-        </Root>
-        <Logger level="INFO">
+        <Logger name="performance-analyse" level="INFO" additivity="false">
             <AppenderRef ref="performance-analyse-file"/>
             <AppenderRef ref="stdout"/>
         </Logger>
+        <Logger level="INFO" name="main" additivity="false">
+            <AppenderRef ref="file"/>
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="stdout"/>
+        </Root>
     </Loggers>
 </Configuration>

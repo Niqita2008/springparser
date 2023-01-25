@@ -22,7 +22,7 @@ public class Parser {
 
     public Parser() {
         okbBS = Pattern.compile("Сформирован.+\n +\\d{1,2}.+\n", Pattern.MULTILINE);
-        logger = LogManager.getRootLogger();
+        logger = LogManager.getLogger("main");
     }
 
     public Result get(PDDocument doc) throws Exception, IllegalDocumentException {

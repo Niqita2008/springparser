@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.INCORRECT_FORMAT;
 import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.IllegalCause.INVALID;
@@ -27,13 +28,16 @@ import static com.vprave.niqitadev.parser.parse.IllegalDocumentException.Illegal
 public class StorageService {
 
     private final Path rootLocation;
-    private final Logger logger = LogManager.getRootLogger();
+    private final Logger logger;
+    private final PerformanceMonitor performanceMonitor;
     private final SimpleDateFormat dateFormat;
 
     @Autowired
     public StorageService(StorageProperties properties) {
         rootLocation = properties.getLocation();
         dateFormat = properties.getDateFormat();
+        logger = LogManager.getLogger("main");
+        performanceMonitor = new PerformanceMonitor();
     }
 
     public Result handleFile(MultipartFile file) throws IllegalDocumentException {
@@ -53,27 +57,27 @@ public class StorageService {
             PDFParser pdfParser = new PDFParser(raf);
             pdfParser.parse();
             raf.close();
-
+            System.gc();
             Result result = new Parser().get(doc = new PDDocument(pdfParser.getDocument()));
-            logger.info("Parsing took " + (((double) System.nanoTime() - l) / 1000000000) + "s");
+            logger.info("Parsing took " + ((System.nanoTime() - l) / 1000000000.) + "s");
+            performanceMonitor.print();
             return result;
         } catch (Exception e) {
+            System.gc();
             logger.error("Something went wrong", e);
             try {
-                doc.close();
+                Objects.requireNonNull(doc).close();
             } catch (Exception exception) {
                 throw new IllegalDocumentException(INVALID, exception);
             }
             throw new IllegalDocumentException(INCORRECT_FORMAT, e);
-        } finally {
-            System.gc();
         }
     }
 
     public void init() {
         try {
             Files.createDirectories(rootLocation);
-            Date date = new Date(System.currentTimeMillis() - 2592000000L);// -30 days
+            Date date = new Date(System.currentTimeMillis() - 2592000000L); //-30 days
             File[] files = rootLocation.toFile().listFiles(file -> {
                 try {
                     return file.isDirectory() && dateFormat.parse(file.getName()).after(date);
