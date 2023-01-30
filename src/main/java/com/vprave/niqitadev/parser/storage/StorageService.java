@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,13 +30,14 @@ public class StorageService {
     private final Logger logger;
     private final PerformanceMonitor performanceMonitor;
     private final SimpleDateFormat dateFormat;
+    private final Parser parser;
 
-    @Autowired
-    public StorageService(StorageProperties properties) {
+    public StorageService(StorageProperties properties, PerformanceMonitor performanceMonitor, Parser parser) {
+        this.performanceMonitor = performanceMonitor;
         rootLocation = properties.getLocation();
         dateFormat = properties.getDateFormat();
+        this.parser = parser;
         logger = LogManager.getLogger("main");
-        performanceMonitor = new PerformanceMonitor();
     }
 
     public Result handleFile(MultipartFile file) throws IllegalDocumentException {
@@ -58,7 +58,7 @@ public class StorageService {
             pdfParser.parse();
             raf.close();
             System.gc();
-            Result result = new Parser().get(doc = new PDDocument(pdfParser.getDocument()));
+            Result result = parser.get(doc = new PDDocument(pdfParser.getDocument()));
             logger.info("Parsing took " + ((System.nanoTime() - l) / 1000000000.) + "s");
             performanceMonitor.print();
             return result;
@@ -77,7 +77,7 @@ public class StorageService {
     public void init() {
         try {
             Files.createDirectories(rootLocation);
-            Date date = new Date(System.currentTimeMillis() - 2592000000L); //-30 days
+            Date date = new Date(System.currentTimeMillis() - 2592000000L); // -30 days
             File[] files = rootLocation.toFile().listFiles(file -> {
                 try {
                     return file.isDirectory() && dateFormat.parse(file.getName()).after(date);

@@ -1,16 +1,24 @@
 package com.vprave.niqitadev.parser.parse;
 
 
+import org.springframework.stereotype.Service;
+
 import java.util.regex.Pattern;
 
+@Service
 public final class Patterns {
-    public static final Pattern innPattern = Pattern.compile("\\d{10}", 0),
-            moneyPattern = Pattern.compile("\\d{1,3}( +\\d{3})*(,\\d{1,2})?|\\d+", 0),
-            spacePattern = Pattern.compile(" {2,}", 0),
-            date = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}|\\d{1,2} +[а-я]+ +\\d{4}|\\d{2}-\\d{2}-\\d{4}", 0),
-            uuid = Pattern.compile("[a-f\\-\\dA-F]{8}-([a-f\\-\\dA-F]{4}-){3}[a-f\\-\\dA-F]{12}(-[a-f\\-\\dA-F])?", 0);
-    public final static Okb okb = new Okb();
-    public final static Nbki nbki = new Nbki();
+    public final Pattern innPattern, moneyPattern, spacePattern, date, uuid;
+    public final Okb okb;
+    public final Nbki nbki;
+    public Patterns() {
+        innPattern = Pattern.compile("\\d{10}", 0);
+        moneyPattern = Pattern.compile("\\d{1,3}( +\\d{3})*(,\\d{1,2})?|\\d+", 0);
+        spacePattern = Pattern.compile(" {2,}", 0);
+        date = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}|\\d{1,2} +[а-я]+ +\\d{4}|\\d{2}-\\d{2}-\\d{4}", 0);
+        uuid = Pattern.compile("[a-f\\-\\dA-F]{8}-([a-f\\-\\dA-F]{4}-){3}[a-f\\-\\dA-F]{12}(-[a-f\\-\\dA-F])?", 0);
+        okb = new Okb();
+        nbki = new Nbki();
+    }
 
     public static final class Nbki {
         public final Pattern currencyPattern, fullName, typePattern, start, end, pageBs, normalisedSplit, bs;

@@ -6,11 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 
+@Getter
 @ConfigurationProperties("storage")
 public class StorageProperties {
-	@Getter
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd--HH:mm:ss.SSS");
-	@Getter
 	private Path location = Path.of("upload");
 
 	public void setLocation(String location) {
