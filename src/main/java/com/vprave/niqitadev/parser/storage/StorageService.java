@@ -5,7 +5,8 @@ import com.vprave.niqitadev.parser.parse.Parser;
 import com.vprave.niqitadev.parser.table.Result;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.stereotype.Service;
@@ -53,12 +54,9 @@ public class StorageService {
 
             logger.info("Starting detect from " + copied.getAbsolutePath());
             double l = System.nanoTime();
-            RandomAccessFile raf = new RandomAccessFile(copied, "r");
-            PDFParser pdfParser = new PDFParser(raf);
-            pdfParser.parse();
-            raf.close();
-            System.gc();
-            Result result = parser.get(doc = new PDDocument(pdfParser.getDocument()));
+            RandomAccessRead rar = new RandomAccessReadBufferedFile(copied);
+            Result result = parser.get(doc = new PDFParser(rar).parse());
+            rar.close();
             logger.info("Parsing took " + ((System.nanoTime() - l) / 1000000000.) + "s");
             performanceMonitor.print();
             return result;

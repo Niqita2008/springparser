@@ -1,11 +1,11 @@
-const form = document.querySelector('#form'), btn = document.querySelector('#file');
+const form = document.getElementById("form"), btn = document.getElementById("file");
 
 function copyTable() {
-    let copy = document.querySelector('#copyLabel')
+    let copy = document.getElementById("copyLabel");
     copy.innerText = 'Скопированно!';
     setTimeout(() => copy.innerText = 'Копировать таблицу', 1250);
-    let textArea = document.querySelector('#copy-label');
-    textArea.value = document.querySelector('#table').innerText;
+    let textArea = document.getElementById("copy-area");
+    textArea.innerText = document.getElementById("table").value;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
