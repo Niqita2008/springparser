@@ -57,11 +57,6 @@ tr:nth-child(even) {
     background: #CCC;
 }
 
-#copy-area {
-    display: none;
-    z-index: -1;
-}
-
 body {
     font-family: 'Matias', sans-serif;
     font-size: 20px;

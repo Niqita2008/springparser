@@ -13,8 +13,6 @@
     <label th:if="${table}" onclick="copyTable()" for="copy" id="copyLabel">Копировать таблицу</label>
 </form>
 
-<textarea id="copy-area"></textarea>
-
 <table id=table th:if="${table}">
     <tr>
         <th>ФИО</th>
@@ -55,7 +53,7 @@
         <td th:text="${row.debt}"></td>
     </tr>
 </table>
-<p th:if="${err}" th:text="${err}" style="color: #F12"></p>
+<p th:if="${err}" th:text="${err}"></p>
 <script type="text/javascript" th:src="@{script.js}"></script>
 </body>
 </html>

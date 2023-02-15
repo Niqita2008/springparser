@@ -1,21 +1,24 @@
 const form = document.getElementById("form"), btn = document.getElementById("file");
 
-function copyTable() {
-    let copy = document.getElementById("copyLabel");
+const copyTable = () => {
+    const copy = document.querySelector('#copyLabel')
     copy.innerText = 'Скопированно!';
     setTimeout(() => copy.innerText = 'Копировать таблицу', 1250);
-    let textArea = document.getElementById("copy-area");
-    textArea.innerText = document.getElementById("table").value;
+    const textArea = document.createElement("textarea");
+    textArea.value = document.getElementById("table").innerHTML;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
-    return new Promise((res, rej) => {
-        document.execCommand('copy') ? res() : rej();
-    });
+    try {
+        document.execCommand('copy');
+    } catch (err) {
+        console.error('Unable to copy to clipboard', err);
+    }
+    document.body.removeChild(textArea);
 }
 
 btn.disabled = false;
-btn.addEventListener('change', function () {
+btn.addEventListener('change', () => {
     let file = this.files[0];
     if (!file.name.endsWith('.pdf')) {
         alert('Выбрете файл *.pdf');
