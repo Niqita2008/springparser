@@ -1,11 +1,12 @@
-const form = document.getElementById("form"), btn = document.getElementById("file");
+document.getElementById("form");
+const btn = document.getElementById("file");
 
 const copyTable = () => {
     const copy = document.querySelector('#copyLabel')
     copy.innerText = 'Скопированно!';
     setTimeout(() => copy.innerText = 'Копировать таблицу', 1250);
     const textArea = document.createElement("textarea");
-    textArea.value = document.getElementById("table").innerHTML;
+    textArea.value = document.getElementById("table").innerText;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -18,8 +19,8 @@ const copyTable = () => {
 }
 
 btn.disabled = false;
-btn.addEventListener('change', () => {
-    let file = this.files[0];
+btn.addEventListener('change', (event) => {
+    const file = event.target.files[0];
     if (!file.name.endsWith('.pdf')) {
         alert('Выбрете файл *.pdf');
         return;
@@ -28,6 +29,6 @@ btn.addEventListener('change', () => {
         alert('Файл не подходит по размерам');
         return;
     }
-    form.submit();
+    this.submit();
     btn.disabled = true;
-});
+}, false);

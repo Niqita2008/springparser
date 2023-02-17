@@ -56,53 +56,67 @@ public final class NbkiParser implements BiConsumer<String, Row> {
     @Override
     public void accept(String page, Row row) {
         String[] lines = (page = Utils.removeAll(patterns.nbki.pageBs, page)).lines().filter(s -> !s.isBlank()).toArray(String[]::new);
-        int companyEnd = lines[0].indexOf("Договор"), j = 0;
-        for (; lines[0].charAt(j) == ' '; j++) companyEnd--;
         boolean closed = StringUtils.substringBetween(page, "Статус: ", "\n").contains("закрыт");
         Matcher matcher = patterns.uuid.matcher(page);
         if (matcher.find()) row.uuid = matcher.group(0);
-        int tempInd;
 
-        if ((tempInd = page.indexOf("Вид: ")) != -1) {
-            Matcher typeMatcher = patterns.nbki.typePattern.matcher(page.substring(tempInd + 5));
+        int tempIndex = page.indexOf("Вид: ");
+        if (tempIndex != -1) {
+            Matcher typeMatcher = patterns.nbki.typePattern.matcher(page.substring(tempIndex + 5));
             if (typeMatcher.find()) row.type = typeMatcher.group(0);
         }
-        if ((tempInd = page.indexOf("Открыт: ")) != -1) {
-            Matcher dateMatcher = patterns.date.matcher(page.substring(tempInd + 8));
+
+        tempIndex = page.indexOf("Открыт: ");
+        if (tempIndex != -1) {
+            Matcher dateMatcher = patterns.date.matcher(page.substring(tempIndex + 8));
             if (dateMatcher.find()) row.opened = dateMatcher.group(0);
         }
-        if ((tempInd = page.indexOf("Всего выплачено: ")) != -1) {
-            Matcher paidMatcher = patterns.moneyPattern.matcher(page.substring(tempInd + 17));
+
+        tempIndex = page.indexOf("Всего выплачено: ");
+        if (tempIndex != -1) {
+            Matcher paidMatcher = patterns.straitMoneyPattern.matcher(page.substring(tempIndex + 17));
             if (paidMatcher.find()) row.paid = paidMatcher.group(0);
         }
-        if ((tempInd = page.indexOf("Задолж-сть: ")) != -1) {
-            Matcher debtMatcher = patterns.moneyPattern.matcher(page.substring(tempInd + 12));
+
+        tempIndex = page.indexOf("Задолж-сть: ");
+        if (tempIndex != -1) {
+            Matcher debtMatcher = patterns.straitMoneyPattern.matcher(page.substring(tempIndex + 12));
             if (debtMatcher.find()) row.debt = debtMatcher.group(0);
         }
-        if (closed && (tempInd = page.indexOf("статуса: ")) != -1) {
-            Matcher dateMatcher = patterns.date.matcher(page.substring(tempInd + 15));
-            if (dateMatcher.find()) row.closed = dateMatcher.group(0);
+
+        if (closed) {
+            tempIndex = page.indexOf("статуса: ");
+            if (tempIndex != -1) {
+                Matcher dateMatcher = patterns.date.matcher(page.substring(tempIndex + 15));
+                if (dateMatcher.find()) row.closed = dateMatcher.group(0);
+            }
         }
-        if ((tempInd = page.indexOf("ИНН: ")) != -1) {
-            Matcher innMatcher = patterns.innPattern.matcher(page.substring(tempInd + 5));
+
+        tempIndex = page.indexOf("ИНН: ");
+        if (tempIndex != -1) {
+            Matcher innMatcher = patterns.innPattern.matcher(page.substring(tempIndex + 5));
             if (innMatcher.find()) row.inn = innMatcher.group(0);
         }
 
-        if ((tempInd = page.indexOf("Размер/лимит: ")) != -1) {
-            Matcher sizeMatcher = patterns.moneyPattern.matcher(page.substring(tempInd += 14)), currencyMatcher = patterns.nbki.currencyPattern.matcher(page.substring(tempInd));
+        tempIndex = page.indexOf("Размер/лимит: ");
+        if (tempIndex != -1) {
+            Matcher sizeMatcher = patterns.straitMoneyPattern.matcher(page.substring(tempIndex += 14)), currencyMatcher = patterns.nbki.currencyPattern.matcher(page.substring(tempIndex));
             if (sizeMatcher.find()) row.size = sizeMatcher.group(0);
             if (currencyMatcher.find()) row.currency = currencyMatcher.group(0);
         }
 
+        int companyEnd = lines[0].indexOf("Договор"), j = 0;
+        for (; lines[0].charAt(j) == ' '; j++) companyEnd--;
         for (j = 0; j < lines.length; j++) {
             if (row.creditCompany != null) break;
-            if ((tempInd = lines[j].indexOf("Кредитор: ")) != -1) {
-                StringBuilder temp = new StringBuilder().append(lines[j], tempInd + 10, companyEnd + tempInd);
+            tempIndex = lines[j].indexOf("Кредитор: ");
+            if (tempIndex != -1) {
+                StringBuilder temp = new StringBuilder().append(lines[j], tempIndex + 10, companyEnd + tempIndex);
                 for (int g = j + 1; g < lines.length; g++) {
                     String s = Utils.removeAll(patterns.spacePattern, lines[g]);
                     if (s.startsWith("Стр.")) continue;
                     if (s.startsWith("Счет:") || s.startsWith("УИД договора(сделки):")) break;
-                    temp.append(lines[g], tempInd, companyEnd + tempInd);
+                    temp.append(lines[g], tempIndex, companyEnd + tempIndex);
                 }
                 row.creditCompany = patterns.spacePattern.matcher(temp).replaceAll(" ");
             }

@@ -50,8 +50,8 @@ public class OkbParser {
         i = 0;
         startHeader[0] = header.indexOf("Источник");
         startHeader[1] = header.indexOf("Размер");
-        int i = header.indexOf("Вид");
-        if (i != -1 && (startHeader[0] == -1 || i < startHeader[0])) startHeader[0] = i;
+        int indexOf = header.indexOf("Вид");
+        if (indexOf != -1 && (startHeader[0] == -1 || indexOf < startHeader[0])) startHeader[0] = indexOf;
         sumI[0] = header.indexOf("Задолженность");
         assert startHeader[0] != -1 && startHeader[1] != -1 && sumI[0] != -1;
         split = patterns.okb.headerSplit.split(header);

@@ -7,12 +7,13 @@ import java.util.regex.Pattern;
 
 @Service
 public final class Patterns {
-    public final Pattern innPattern, moneyPattern, spacePattern, date, uuid;
+    public final Pattern innPattern, moneyPattern, spacePattern, date, uuid, straitMoneyPattern;
     public final Okb okb;
     public final Nbki nbki;
     public Patterns() {
         innPattern = Pattern.compile("\\d{10}", 0);
-        moneyPattern = Pattern.compile("\\d{1,3}( +\\d{3})*(,\\d{1,2})?|\\d+", 0);
+        moneyPattern = Pattern.compile("\\d{1,3}( +\\d{3})*(,\\d{1,2})?", 0);
+        straitMoneyPattern = Pattern.compile("\\d+", 0);
         spacePattern = Pattern.compile(" {2,}", 0);
         date = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}|\\d{1,2} +[а-я]+ +\\d{4}|\\d{2}-\\d{2}-\\d{4}", 0);
         uuid = Pattern.compile("[a-f\\-\\dA-F]{8}-([a-f\\-\\dA-F]{4}-){3}[a-f\\-\\dA-F]{12}(-[a-f\\-\\dA-F])?", 0);
