@@ -1,5 +1,4 @@
-document.getElementById("form");
-const btn = document.getElementById("file");
+const btn = document.getElementById("file"), form = document.getElementById("form");
 
 const copyTable = () => {
     const copy = document.querySelector('#copyLabel')
@@ -29,6 +28,6 @@ btn.addEventListener('change', (event) => {
         alert('Файл не подходит по размерам');
         return;
     }
-    this.submit();
+    form.submit();
     btn.disabled = true;
 }, false);
